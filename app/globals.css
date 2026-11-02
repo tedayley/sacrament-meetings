@@ -1,26 +1,190 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #080b14;
+  --surface: #101625;
+  --surface-hover: #172136;
+  --surface-elevated: #1b263b;
+  --foreground: #e8f1ff;
+  --muted: #9aaac2;
+
+  --neon-blue: #00e5ff;
+  --neon-pink: var(--neon-blue);
+  --neon-accent: var(--neon-blue);
+
+  --border: #26344b;
+  --font-body: Arial, Helvetica, sans-serif;
+  --section-spacing: 3rem;
+  --content-width: 1200px;
+  --card-radius: 12px;
+
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-muted: var(--muted);
+  --color-neon-blue: var(--neon-blue);
+  --color-neon-pink: var(--neon-blue);
+  --color-neon-accent: var(--neon-accent);
+  --color-border: var(--border);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --spacing-section: var(--section-spacing);
+  --radius-card: var(--card-radius);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
+  min-height: 100vh;
+  margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), var(--font-body);
+  line-height: 1.6;
+}
+
+.neon-panel {
+  border: 1px solid color-mix(in srgb, var(--neon-accent) 70%, var(--border));
+  background:
+    linear-gradient(145deg, rgb(255 255 255 / 3%), transparent 45%),
+    var(--surface);
+  box-shadow:
+    0 0 18px color-mix(in srgb, var(--neon-accent) 30%, transparent),
+    inset 0 0 24px rgb(0 0 0 / 55%);
+}
+
+.neon-panel:hover {
+  border-color: var(--neon-accent);
+  box-shadow:
+    0 0 26px color-mix(in srgb, var(--neon-accent) 48%, transparent),
+    inset 0 0 28px rgb(0 0 0 / 62%);
+}
+
+.neon-bar {
+  border-color: color-mix(in srgb, var(--neon-accent) 70%, var(--border));
+  box-shadow: 0 4px 20px
+    color-mix(in srgb, var(--neon-accent) 24%, transparent);
+}
+
+.neon-divider {
+  border-color: color-mix(in srgb, var(--neon-accent) 55%, var(--border));
+  box-shadow: 0 0 14px
+    color-mix(in srgb, var(--neon-accent) 18%, transparent);
+}
+
+.neon-text {
+  color: var(--neon-accent);
+  text-shadow:
+    0 0 8px color-mix(in srgb, var(--neon-accent) 70%, transparent),
+    0 0 20px color-mix(in srgb, var(--neon-accent) 35%, transparent);
+}
+
+.neon-chip {
+  border: 1px solid var(--neon-accent);
+  background: var(--neon-accent);
+  box-shadow:
+    0 0 16px color-mix(in srgb, var(--neon-accent) 50%, transparent),
+    inset 0 0 10px rgb(0 0 0 / 34%);
+  color: #05070c;
+  text-shadow: 0 1px 2px rgb(255 255 255 / 55%);
+}
+
+.neon-button {
+  border: 1px solid var(--neon-accent);
+  background: var(--neon-accent);
+  box-shadow:
+    0 0 16px color-mix(in srgb, var(--neon-accent) 44%, transparent),
+    inset 0 0 12px rgb(0 0 0 / 38%);
+  color: #05070c;
+  text-shadow: 0 1px 2px rgb(255 255 255 / 55%);
+  transition:
+    transform 0.2s ease;
+}
+
+.neon-button:hover {
+  box-shadow:
+    0 0 24px color-mix(in srgb, var(--neon-accent) 70%, transparent),
+    inset 0 0 14px rgb(0 0 0 / 42%);
+  transform: translateY(-1px);
+}
+
+.neon-link {
+  color: var(--neon-accent);
+  text-shadow: 0 0 10px
+    color-mix(in srgb, var(--neon-accent) 65%, transparent);
+}
+
+.neon-link:hover,
+.neon-link:focus-visible {
+  color: var(--neon-blue);
+  text-shadow: 0 0 14px var(--neon-blue);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--foreground);
+  line-height: 1.2;
+}
+
+a {
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--neon-accent);
+  outline-offset: 4px;
+}
+
+::selection {
+  background: var(--neon-accent);
+  color: #080b14;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--surface-elevated);
+  border: 2px solid var(--background);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neon-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
