@@ -1,13 +1,28 @@
-import { getMeetings } from "@/lib/meetings-db";
+import { Suspense } from "react";
+import { getPaginatedMeetings } from "@/lib/meetings-db";
 import MeetingCard from "@/components/MeetingCard";
+import MeetingSearch from "@/components/MeetingSearch";
+import Pagination from "@/components/Pagination";
 
-export default async function MeetingsPage() {
-  const meetings = await getMeetings();
+interface MeetingsPageProps {
+  searchParams: Promise<{
+    query?: string | string[];
+    page?: string | string[];
+  }>;
+}
 
-  // Sort meetings from newest to oldest
-  const sortedMeetings = [...meetings].sort((a, b) =>
-    b.date.localeCompare(a.date)
-  );
+export default async function MeetingsPage({
+  searchParams,
+}: MeetingsPageProps) {
+  const params = await searchParams;
+  const query = Array.isArray(params.query) ? params.query[0] : params.query;
+  const page = Array.isArray(params.page) ? params.page[0] : params.page;
+  const {
+    meetings,
+    totalCount,
+    totalPages,
+    currentPage,
+  } = await getPaginatedMeetings(query, page);
 
   return (
     <div className="space-y-10">
@@ -30,19 +45,27 @@ export default async function MeetingsPage() {
 
       {/* Meeting list heading */}
       <section className="space-y-6">
+        <Suspense
+          fallback={
+            <div className="h-12 w-full max-w-xl animate-pulse rounded-md bg-surface" />
+          }
+        >
+          <MeetingSearch />
+        </Suspense>
+
         <div className="flex flex-wrap items-center justify-between gap-4">
           <h2 className="text-2xl font-semibold">
             Meeting History
           </h2>
 
           <span className="text-sm text-muted">
-            {meetings.length} meetings
+            {totalCount} {totalCount === 1 ? "meeting" : "meetings"}
           </span>
         </div>
 
-        {sortedMeetings.length > 0 ? (
+        {meetings.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2">
-            {sortedMeetings.map((meeting) => (
+            {meetings.map((meeting) => (
               <MeetingCard
                 key={meeting.id}
                 meeting={meeting}
@@ -56,10 +79,16 @@ export default async function MeetingsPage() {
             </h3>
 
             <p className="text-muted">
-              There are currently no sacrament meetings available.
+              {query
+                ? `No meetings match “${query}”. Try a different search.`
+                : "There are currently no sacrament meetings available."}
             </p>
           </div>
         )}
+
+        <Suspense fallback={null}>
+          <Pagination currentPage={currentPage} totalPages={totalPages} />
+        </Suspense>
       </section>
 
     </div>
