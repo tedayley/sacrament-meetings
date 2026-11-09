@@ -1,7 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { connection, NextRequest, NextResponse } from "next/server";
 import { getMeetings } from "@/lib/meetings-db";
 
 export async function GET(request: NextRequest) {
+  await connection();
+
   try {
     // Retrieve all meetings
     let meetings = await getMeetings();
