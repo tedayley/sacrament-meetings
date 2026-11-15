@@ -1,6 +1,7 @@
 
 import Link from "next/link";
 import type { SacramentMeeting } from "@/lib/types";
+import MeetingDeleteForm from "@/components/MeetingDeleteForm";
 
 interface MeetingCardProps {
   meeting: SacramentMeeting;
@@ -60,13 +61,22 @@ export default function MeetingCard({ meeting }: MeetingCardProps) {
         </p>
       </div>
 
-      <Link
-        href={`/meetings/${meeting.id}`}
-        className="neon-button inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold"
-      >
-        View Meeting Agenda
-        <span aria-hidden="true">→</span>
-      </Link>
+      <div className="flex flex-wrap items-center gap-3">
+        <Link
+          href={`/meetings/${meeting.id}`}
+          className="neon-button inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold"
+        >
+          View Meeting Agenda
+          <span aria-hidden="true">→</span>
+        </Link>
+        <Link
+          href={`/meetings/${meeting.id}/edit`}
+          className="neon-link rounded-md border border-neon-blue px-4 py-2 text-sm font-semibold"
+        >
+          Edit
+        </Link>
+        <MeetingDeleteForm id={meeting.id} />
+      </div>
     </article>
   );
 }

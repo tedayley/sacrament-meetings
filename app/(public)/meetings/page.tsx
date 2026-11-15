@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { getPaginatedMeetings } from "@/lib/meetings-db";
 import MeetingCard from "@/components/MeetingCard";
 import MeetingSearch from "@/components/MeetingSearch";
@@ -58,9 +59,17 @@ export default async function MeetingsPage({
             Meeting History
           </h2>
 
-          <span className="text-sm text-muted">
-            {totalCount} {totalCount === 1 ? "meeting" : "meetings"}
-          </span>
+          <div className="flex flex-wrap items-center gap-4">
+            <span className="text-sm text-muted">
+              {totalCount} {totalCount === 1 ? "meeting" : "meetings"}
+            </span>
+            <Link
+              href="/meetings/new"
+              className="neon-button rounded-md px-4 py-2 text-sm font-semibold"
+            >
+              Create meeting
+            </Link>
+          </div>
         </div>
 
         {meetings.length > 0 ? (

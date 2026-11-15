@@ -59,6 +59,8 @@ function formatMeeting(row: MeetingRow): SacramentMeeting {
   };
 }
 
+export type MeetingRecordInput = Omit<SacramentMeeting, 'id'>;
+
 // Retrieves all meetings, or meetings for a specific date.
 export async function getMeetings(
   date?: string | null
@@ -171,4 +173,82 @@ export async function getMeetingById(
   return rows.length > 0 ? formatMeeting(rows[0]) : null;
 }
 
-// Mutation functions will be implemented in Week 04.
+export async function createMeeting(meeting: MeetingRecordInput): Promise<void> {
+  await sql`
+    INSERT INTO meetings (
+      date,
+      meeting_type,
+      presiding,
+      conducting,
+      announcements,
+      opening_hymn,
+      opening_prayer,
+      ward_business,
+      stake_business,
+      sacrament_hymn,
+      speakers,
+      closing_hymn,
+      closing_prayer
+    )
+    VALUES (
+      ${meeting.date}::date,
+      ${meeting.meetingType},
+      ${meeting.presiding},
+      ${meeting.conducting},
+      ARRAY(
+        SELECT jsonb_array_elements_text(
+          ${JSON.stringify(meeting.announcements ?? [])}::jsonb
+        )
+      ),
+      ${JSON.stringify(meeting.openingHymn)}::jsonb,
+      ${meeting.openingPrayer},
+      ${JSON.stringify(meeting.wardBusiness)}::jsonb,
+      ${meeting.stakeBusiness},
+      ${JSON.stringify(meeting.sacramentHymn)}::jsonb,
+      ${JSON.stringify(meeting.speakers)}::jsonb,
+      ${JSON.stringify(meeting.closingHymn)}::jsonb,
+      ${meeting.closingPrayer}
+    )
+  `;
+}
+
+export async function updateMeeting(
+  id: number,
+  meeting: MeetingRecordInput
+): Promise<boolean> {
+  const rows = await sql`
+    UPDATE meetings
+    SET
+      date = ${meeting.date}::date,
+      meeting_type = ${meeting.meetingType},
+      presiding = ${meeting.presiding},
+      conducting = ${meeting.conducting},
+      announcements = ARRAY(
+        SELECT jsonb_array_elements_text(
+          ${JSON.stringify(meeting.announcements ?? [])}::jsonb
+        )
+      ),
+      opening_hymn = ${JSON.stringify(meeting.openingHymn)}::jsonb,
+      opening_prayer = ${meeting.openingPrayer},
+      ward_business = ${JSON.stringify(meeting.wardBusiness)}::jsonb,
+      stake_business = ${meeting.stakeBusiness},
+      sacrament_hymn = ${JSON.stringify(meeting.sacramentHymn)}::jsonb,
+      speakers = ${JSON.stringify(meeting.speakers)}::jsonb,
+      closing_hymn = ${JSON.stringify(meeting.closingHymn)}::jsonb,
+      closing_prayer = ${meeting.closingPrayer}
+    WHERE id = ${id}
+    RETURNING id
+  ` as unknown as { id: number }[];
+
+  return rows.length > 0;
+}
+
+export async function deleteMeeting(id: number): Promise<boolean> {
+  const rows = await sql`
+    DELETE FROM meetings
+    WHERE id = ${id}
+    RETURNING id
+  ` as unknown as { id: number }[];
+
+  return rows.length > 0;
+}
