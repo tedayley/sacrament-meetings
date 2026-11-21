@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
+import { auth } from '@/auth';
 import {
   createMeeting as createMeetingRecord,
   deleteMeeting as deleteMeetingRecord,
@@ -96,6 +97,13 @@ export type State = {
   errors: Partial<Record<keyof z.input<typeof MeetingFormSchema>, string[]>>;
 };
 
+async function requireAuthenticatedUser() {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('You must be signed in to manage meetings.');
+  }
+}
+
 async function validateMeetingForm(formData: FormData) {
   return MeetingFormSchema.safeParse({
     ...Object.fromEntries(formData),
@@ -108,6 +116,7 @@ export async function createMeeting(
   formData: FormData
 ): Promise<State> {
   void prevState;
+  await requireAuthenticatedUser();
   const result = await validateMeetingForm(formData);
 
   if (!result.success) {
@@ -161,6 +170,7 @@ export async function updateMeeting(
   formData: FormData
 ): Promise<State> {
   void prevState;
+  await requireAuthenticatedUser();
   if (!/^[1-9]\d*$/.test(id)) {
     return { message: 'The meeting ID is invalid.', errors: {} };
   }
@@ -228,6 +238,7 @@ export async function deleteMeeting(
   prevState: State
 ): Promise<State> {
   void prevState;
+  await requireAuthenticatedUser();
   if (!Number.isSafeInteger(id) || id <= 0) {
     return { message: 'The meeting ID is invalid.', errors: {} };
   }

@@ -20,9 +20,26 @@ const geistMono = Geist_Mono({
 });
 
 // Website metadata
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+  ?? (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined);
+const siteTitle = "Sacrament Meeting Planner";
+const siteDescription =
+  "Plan sacrament meeting agendas, coordinate speakers and hymns, and organize ward business.";
+
 export const metadata: Metadata = {
-  title: "Sacrament Meeting Planner",
-  description: "Plan and organize ward sacrament meetings.",
+  metadataBase: siteUrl ? new URL(siteUrl) : undefined,
+  title: {
+    default: siteTitle,
+    template: `%s | ${siteTitle}`,
+  },
+  description: siteDescription,
+  openGraph: {
+    title: siteTitle,
+    description: siteDescription,
+    siteName: siteTitle,
+    type: "website",
+    ...(siteUrl ? { url: siteUrl } : {}),
+  },
 };
 
 // Root layout for the entire application

@@ -5,9 +5,10 @@ import MeetingDeleteForm from "@/components/MeetingDeleteForm";
 
 interface MeetingCardProps {
   meeting: SacramentMeeting;
+  canManage: boolean;
 }
 
-export default function MeetingCard({ meeting }: MeetingCardProps) {
+export default function MeetingCard({ meeting, canManage }: MeetingCardProps) {
   const meetingDate = new Date(`${meeting.date}T00:00:00`).toLocaleDateString(
     "en-US",
     {
@@ -69,13 +70,17 @@ export default function MeetingCard({ meeting }: MeetingCardProps) {
           View Meeting Agenda
           <span aria-hidden="true">→</span>
         </Link>
-        <Link
-          href={`/meetings/${meeting.id}/edit`}
-          className="neon-link rounded-md border border-neon-blue px-4 py-2 text-sm font-semibold"
-        >
-          Edit
-        </Link>
-        <MeetingDeleteForm id={meeting.id} />
+        {canManage && (
+          <>
+            <Link
+              href={`/meetings/${meeting.id}/edit`}
+              className="neon-link rounded-md border border-neon-blue px-4 py-2 text-sm font-semibold"
+            >
+              Edit
+            </Link>
+            <MeetingDeleteForm id={meeting.id} />
+          </>
+        )}
       </div>
     </article>
   );
